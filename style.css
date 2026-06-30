@@ -1,0 +1,453 @@
+/* =========================================================
+   GLASS CALCULATOR — STYLESHEET
+   Organized into:
+   1. Theme tokens (dark / light)
+   2. Base & layout
+   3. Background decoration
+   4. Calculator card
+   5. Display
+   6. Buttons / keys
+   7. History panel
+   8. Toast + animations
+   9. Responsive breakpoints
+   ========================================================= */
+
+/* ---------- 1. THEME TOKENS ---------- */
+:root {
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --radius: 18px;
+  --transition: 0.2s ease;
+}
+
+/* Dark theme (default) */
+[data-theme="dark"] {
+  --bg-1: #0f172a;
+  --bg-2: #1e293b;
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --key-bg: rgba(255, 255, 255, 0.08);
+  --key-bg-hover: rgba(255, 255, 255, 0.16);
+  --func-bg: rgba(255, 255, 255, 0.04);
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+  --op-text: #38bdf8;
+  --shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  --blob-1: #0ea5e9;
+  --blob-2: #6366f1;
+  --blob-3: #14b8a6;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg-1: #e0e7ff;
+  --bg-2: #f8fafc;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --text: #0f172a;
+  --text-muted: #475569;
+  --key-bg: rgba(255, 255, 255, 0.7);
+  --key-bg-hover: rgba(255, 255, 255, 0.95);
+  --func-bg: rgba(255, 255, 255, 0.4);
+  --accent: #0284c7;
+  --accent-strong: #0369a1;
+  --op-text: #0284c7;
+  --shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+  --blob-1: #60a5fa;
+  --blob-2: #818cf8;
+  --blob-3: #2dd4bf;
+}
+
+/* ---------- 2. BASE & LAYOUT ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text);
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  max-width: 760px;
+}
+
+/* ---------- 3. BACKGROUND DECORATION ---------- */
+.bg-decor {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  animation: float 14s ease-in-out infinite;
+}
+
+.blob--one {
+  width: 320px;
+  height: 320px;
+  background: var(--blob-1);
+  top: -80px;
+  left: -60px;
+}
+
+.blob--two {
+  width: 280px;
+  height: 280px;
+  background: var(--blob-2);
+  bottom: -60px;
+  right: -40px;
+  animation-delay: -4s;
+}
+
+.blob--three {
+  width: 240px;
+  height: 240px;
+  background: var(--blob-3);
+  top: 40%;
+  left: 50%;
+  animation-delay: -8s;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(20px, -30px) scale(1.1);
+  }
+}
+
+/* ---------- 4. CALCULATOR CARD (GLASSMORPHISM) ---------- */
+.calculator,
+.history {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.calculator {
+  width: 340px;
+  max-width: 100%;
+  padding: 22px;
+}
+
+.calculator__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.calculator__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.icon-btn {
+  background: var(--key-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.icon-btn:hover {
+  background: var(--key-bg-hover);
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+/* ---------- 5. DISPLAY ---------- */
+.display {
+  background: var(--func-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 18px 16px;
+  text-align: right;
+  margin-bottom: 10px;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.display__expression {
+  color: var(--text-muted);
+  font-size: 1rem;
+  min-height: 22px;
+  word-break: break-all;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.display__result {
+  font-size: 2.4rem;
+  font-weight: 700;
+  word-break: break-all;
+  transition: color var(--transition);
+}
+
+.display__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+
+.text-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background var(--transition), color var(--transition);
+}
+
+.text-btn:hover {
+  background: var(--key-bg);
+}
+
+/* ---------- 6. BUTTONS / KEYS ---------- */
+.keys {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.key {
+  border: 1px solid var(--glass-border);
+  background: var(--key-bg);
+  color: var(--text);
+  font-size: 1.3rem;
+  font-weight: 500;
+  padding: 16px 0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background var(--transition), transform 0.08s ease,
+    box-shadow var(--transition);
+}
+
+.key:hover {
+  background: var(--key-bg-hover);
+}
+
+/* Click animation */
+.key:active {
+  transform: scale(0.92);
+}
+
+.key--func {
+  background: var(--func-bg);
+  color: var(--text-muted);
+  font-size: 1.15rem;
+}
+
+.key--op {
+  color: var(--op-text);
+  font-weight: 700;
+}
+
+.key--zero {
+  grid-column: span 1;
+}
+
+.key--equals {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+
+.key--equals:hover {
+  background: var(--accent-strong);
+}
+
+/* ---------- 7. HISTORY PANEL ---------- */
+.history {
+  width: 280px;
+  max-width: 100%;
+  padding: 20px;
+  max-height: 480px;
+  display: flex;
+  flex-direction: column;
+}
+
+.history__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.history__title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.history__list {
+  list-style: none;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history__item {
+  background: var(--func-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: right;
+  transition: background var(--transition), transform var(--transition);
+  animation: fadeIn 0.25s ease;
+}
+
+.history__item:hover {
+  background: var(--key-bg-hover);
+}
+
+.history__item:active {
+  transform: scale(0.97);
+}
+
+.history__item-expr {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.history__item-result {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.history__empty {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ---------- 8. TOAST + ANIMATIONS ---------- */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--accent-strong);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition), transform var(--transition);
+  z-index: 10;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Flash animation on the result when equals is pressed */
+.display__result.flash {
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ---------- 9. RESPONSIVE ---------- */
+@media (max-width: 680px) {
+  .app {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .calculator,
+  .history {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .history {
+    max-height: 260px;
+  }
+}
+
+@media (max-width: 380px) {
+  .key {
+    font-size: 1.15rem;
+    padding: 14px 0;
+  }
+
+  .display__result {
+    font-size: 2rem;
+  }
+}
